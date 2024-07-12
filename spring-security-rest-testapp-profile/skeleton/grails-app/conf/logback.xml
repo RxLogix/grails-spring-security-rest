@@ -1,0 +1,46 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <if condition='property("grails.env").contains("development")'>
+        <then>
+            <appender name="FULL_STACKTRACE" class="ch.qos.logback.core.FileAppender">
+                <file>${TARGET_DIR}/stacktrace.log</file>
+                <append>true</append>
+                <encoder>
+                    <pattern>%level %logger - %msg%n</pattern>
+                </encoder>
+            </appender>
+            <logger name="StackTrace" level="ERROR" additivity="false">
+                <appender-ref ref="FULL_STACKTRACE" />
+            </logger>
+        </then>
+    </if>
+
+    <logger name="org.openqa" level="OFF">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="grails.plugin.springsecurity" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="org.pac4j" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="grails.app" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="org.springframework.security" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+</configuration>

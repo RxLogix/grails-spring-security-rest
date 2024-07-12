@@ -1,3 +1,33 @@
+import org.apache.tools.ant.DirectoryScanner
+
+DirectoryScanner.removeDefaultExclude('**/#*#')
+DirectoryScanner.removeDefaultExclude('**/%*%')
+DirectoryScanner.removeDefaultExclude('**/*~')
+DirectoryScanner.removeDefaultExclude('**/.#*')
+DirectoryScanner.removeDefaultExclude('**/.DS_Store')
+DirectoryScanner.removeDefaultExclude('**/._*')
+DirectoryScanner.removeDefaultExclude('**/.bzr')
+DirectoryScanner.removeDefaultExclude('**/.bzr/**')
+DirectoryScanner.removeDefaultExclude('**/.bzrignore')
+DirectoryScanner.removeDefaultExclude('**/.cvsignore')
+DirectoryScanner.removeDefaultExclude('**/.git')
+DirectoryScanner.removeDefaultExclude('**/.git/**')
+DirectoryScanner.removeDefaultExclude('**/.gitattributes')
+DirectoryScanner.removeDefaultExclude('**/.gitignore')
+DirectoryScanner.removeDefaultExclude('**/.gitmodules')
+DirectoryScanner.removeDefaultExclude('**/.hg')
+DirectoryScanner.removeDefaultExclude('**/.hg/**')
+DirectoryScanner.removeDefaultExclude('**/.hgignore')
+DirectoryScanner.removeDefaultExclude('**/.hgsub')
+DirectoryScanner.removeDefaultExclude('**/.hgsubstate')
+DirectoryScanner.removeDefaultExclude('**/.hgtags')
+DirectoryScanner.removeDefaultExclude('**/.svn')
+DirectoryScanner.removeDefaultExclude('**/.svn/**')
+DirectoryScanner.removeDefaultExclude('**/CVS')
+DirectoryScanner.removeDefaultExclude('**/CVS/**')
+DirectoryScanner.removeDefaultExclude('**/SCCS')
+DirectoryScanner.removeDefaultExclude('**/SCCS/**')
+DirectoryScanner.removeDefaultExclude('**/vssver.scc')
 include 'spring-security-rest', 'spring-security-rest-memcached', 'spring-security-rest-redis', 'spring-security-rest-grailscache', 'spring-security-rest-gorm', 'spring-security-rest-testapp-profile', 'spring-security-rest-docs'
 
 File build = new File('build')
@@ -7,4 +37,4 @@ if (build.exists()) {
         project(":${it.name}").projectDir = it
     }
 }
-
+//gradle.ext.defaultExcludes = ['**/#*#', '**/%*%', '**/*~', '**/.#*', '**/.DS_Store', '**/._*', '**/.bzr', '**/.bzr/**', '**/.bzrignore', '**/.cvsignore', '**/.git', '**/.git/**', '**/.gitattributes', '**/.gitignore', '**/.gitmodules', '**/.hg', '**/.hg/**', '**/.hgignore', '**/.hgsub', '**/.hgsubstate', '**/.hgtags', '**/.svn', '**/.svn/**', '**/CVS', '**/CVS/**', '**/SCCS', '**/SCCS/**', '**/vssver.scc']
