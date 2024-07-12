@@ -12,7 +12,7 @@ import net.spy.memcached.spring.MemcachedClientFactoryBean
 class SpringSecurityRestMemcachedGrailsPlugin extends Plugin {
 
     // the version or versions of Grails the plugin is designed for
-    String grailsVersion = "3.1.0 > *"
+    String grailsVersion = "6.2.0 > *"
     List loadAfter = ['springSecurityRest']
     List pluginExcludes = [
         "grails-app/views/**"

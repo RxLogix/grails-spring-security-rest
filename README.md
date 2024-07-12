@@ -7,6 +7,13 @@ Spring Security REST for Grails
 Grails plugin to implement a stateless, token-based, RESTful authentication 
 using Spring Security. Sponsored and supported by [Object Computing Inc.](http://www.ociweb.com)
 
+## Grails 6.2.0
+For Grails 6.2.0 use JDK 11 and use version 4.0
+```shell
+org.grails.plugins:spring-security-rest:4.0.0
+org.grails.plugins:spring-security-rest-redis:4.0.0
+```
+
 Documentation: 
 
 * [User guide](https://grails-plugins.github.io/grails-spring-security-rest/latest/docs/).

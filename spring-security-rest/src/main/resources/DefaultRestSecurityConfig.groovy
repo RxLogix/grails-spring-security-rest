@@ -58,7 +58,7 @@ security {
                     useSignedJwt = true
                     useEncryptedJwt = false
 
-                    secret = null
+                    secret = 'qrD6h8K6S9503Q06Y6Rfk21TErImPYqa'
                     expiration = 3600
                     refreshExpiration = null
                 }
