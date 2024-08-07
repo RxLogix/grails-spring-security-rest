@@ -9,11 +9,11 @@ DirectoryScanner.removeDefaultExclude('**/._*')
 DirectoryScanner.removeDefaultExclude('**/.bzr')
 DirectoryScanner.removeDefaultExclude('**/.bzr/**')
 DirectoryScanner.removeDefaultExclude('**/.bzrignore')
+DirectoryScanner.removeDefaultExclude('**/.gitignore')
 DirectoryScanner.removeDefaultExclude('**/.cvsignore')
 DirectoryScanner.removeDefaultExclude('**/.git')
 DirectoryScanner.removeDefaultExclude('**/.git/**')
 DirectoryScanner.removeDefaultExclude('**/.gitattributes')
-DirectoryScanner.removeDefaultExclude('**/.gitignore')
 DirectoryScanner.removeDefaultExclude('**/.gitmodules')
 DirectoryScanner.removeDefaultExclude('**/.hg')
 DirectoryScanner.removeDefaultExclude('**/.hg/**')
@@ -37,4 +37,3 @@ if (build.exists()) {
         project(":${it.name}").projectDir = it
     }
 }
-//gradle.ext.defaultExcludes = ['**/#*#', '**/%*%', '**/*~', '**/.#*', '**/.DS_Store', '**/._*', '**/.bzr', '**/.bzr/**', '**/.bzrignore', '**/.cvsignore', '**/.git', '**/.git/**', '**/.gitattributes', '**/.gitignore', '**/.gitmodules', '**/.hg', '**/.hg/**', '**/.hgignore', '**/.hgsub', '**/.hgsubstate', '**/.hgtags', '**/.svn', '**/.svn/**', '**/CVS', '**/CVS/**', '**/SCCS', '**/SCCS/**', '**/vssver.scc']
