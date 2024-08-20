@@ -69,6 +69,20 @@ subprojects { Project project ->
             exclude group: 'io.micronaut', module: 'micronaut-jackson-databind'
         }
 
+        bootRun {
+            ignoreExitValue true
+            jvmArgs(
+                    '-Dspring.output.ansi.enabled=always',
+                    '-noverify',
+                    '-XX:TieredStopAtLevel=1',
+                    '-Xmx1024m',
+                    '-Dfile.encoding=UTF-8' // Adding this for consistent file encoding
+                    )
+            sourceResources sourceSets.main
+            String springProfilesActive = 'spring.profiles.active'
+            systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+        }
+
         apply plugin: 'com.adarshr.test-logger'
 
         testlogger {
@@ -88,6 +102,9 @@ subprojects { Project project ->
             project.name != "spring-security-rest-testapp-profile") {
         apply plugin: 'maven-publish'
         apply plugin: 'signing'
+
+        // enable if you wish to package this plugin as a standalone application
+        bootJar.enabled = false
 
         publishing {
             repositories {
