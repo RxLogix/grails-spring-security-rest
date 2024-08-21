@@ -1,24 +1,15 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url "https://repo.grails.org/grails/core" }
-    }
-    dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
-        classpath 'com.adarshr:gradle-test-logger-plugin:4.0.0'
-    }
-}
-
-plugins {
-    id 'idea'
-    id 'io.github.gradle-nexus.publish-plugin' version '1.3.0'
-}
-
 allprojects {
-    apply plugin:"idea"
+    apply plugin: 'idea'
+    apply plugin: 'com.gorylenko.gradle-git-properties'
 }
 
-def pluginProjects = ['spring-security-rest', 'spring-security-rest-memcached', 'spring-security-rest-redis', 'spring-security-rest-grailscache', 'spring-security-rest-gorm']
+def pluginProjects = [
+        'spring-security-rest',
+        'spring-security-rest-memcached',
+        'spring-security-rest-redis',
+        'spring-security-rest-grailscache',
+        'spring-security-rest-gorm'
+]
 def profileProjects = ['spring-security-rest-testapp-profile']
 def publishedProjects = pluginProjects + profileProjects
 
@@ -32,37 +23,19 @@ ext."signing.keyId" = project.hasProperty("signing.keyId") ? project.getProperty
 ext."signing.password" = project.hasProperty("signing.password") ? project.getProperty('signing.password') : System.getenv('SIGNING_PASSPHRASE')
 ext."signing.secretKeyRingFile" = project.hasProperty("signing.secretKeyRingFile") ? project.getProperty('signing.secretKeyRingFile') : "${System.properties['user.home']}${File.separator}.gnupg${File.separator}secring.gpg"
 
-nexusPublishing {
-    repositories {
-        sonatype {
-            def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
-            def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
-            def ossStagingProfileId = System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: project.hasProperty("sonatypeOssStagingProfileId") ? project.sonatypeOssStagingProfileId : ''
-            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
-            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            username = ossUser
-            password = ossPass
-            stagingProfileId = ossStagingProfileId
-            useStaging = isReleaseVersion
-        }
-    }
-    transitionCheckOptions {
-        maxRetries.set(60)
-        delayBetween.set(java.time.Duration.ofMillis(4000))
-    }
-}
 
 subprojects { Project project ->
-    group "org.grails.plugins"
-    version projectVersion
+    group = "org.grails.plugins"
+    version = projectVersion
 
     repositories {
         mavenCentral()
         maven { url "https://repo.grails.org/grails/core" }
     }
+
     if (project.name != "spring-security-rest-docs" &&
-        project.name != "spring-security-rest-testapp-profile" &&
-            !project.name.startsWith("build") ) {
+            project.name != "spring-security-rest-testapp-profile" &&
+            !project.name.startsWith("build")) {
         apply plugin: "org.grails.grails-plugin"
     }
 
@@ -71,19 +44,17 @@ subprojects { Project project ->
     }
 
     if (project.name in pluginProjects) {
+        apply plugin: 'java'
+        apply plugin: 'java-library'
 
-        sourceCompatibility = targetCompatibility = 1.8
-
-        apply plugin: "java-library"
+        sourceCompatibility = '11'
+        targetCompatibility = '11'
 
         dependencies {
-            console "org.grails:grails-console"
-
             api "org.springframework.boot:spring-boot-starter-logging"
             api "org.springframework.boot:spring-boot-autoconfigure"
             api "org.grails:grails-core"
             api "org.grails.plugins:spring-security-core:$springSecurityCoreVersion"
-
             api "org.grails:grails-plugin-services"
             api "org.grails:grails-plugin-domain-class"
 
@@ -92,6 +63,24 @@ subprojects { Project project ->
             testImplementation('com.athaydes:spock-reports:2.5.1-groovy-3.0') {
                 transitive = false
             }
+        }
+
+        configurations.all {
+            exclude group: 'io.micronaut', module: 'micronaut-jackson-databind'
+        }
+
+        bootRun {
+            ignoreExitValue true
+            jvmArgs(
+                    '-Dspring.output.ansi.enabled=always',
+                    '-noverify',
+                    '-XX:TieredStopAtLevel=1',
+                    '-Xmx1024m',
+                    '-Dfile.encoding=UTF-8' // Adding this for consistent file encoding
+                    )
+            sourceResources sourceSets.main
+            String springProfilesActive = 'spring.profiles.active'
+            systemProperty springProfilesActive, System.getProperty(springProfilesActive)
         }
 
         apply plugin: 'com.adarshr.test-logger'
@@ -113,33 +102,28 @@ subprojects { Project project ->
             project.name != "spring-security-rest-testapp-profile") {
         apply plugin: 'maven-publish'
         apply plugin: 'signing'
-        publishing {
 
+        // enable if you wish to package this plugin as a standalone application
+        bootJar.enabled = false
+
+        publishing {
             repositories {
                 maven {
+                    name = "NexusRepo"
                     credentials {
-                        def u = System.getenv("ARTIFACTORY_USERNAME") ?: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
-                        def p = System.getenv("ARTIFACTORY_PASSWORD") ?: project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
-                        username = u
-                        password = p
+                        username = project.findProperty("nexusUsername") ?: System.getenv("NEXUS_USERNAME")
+                        password = project.findProperty("nexusPassword") ?: System.getenv("NEXUS_PASSWORD")
                     }
-                    if (isSnapshot) {
-                        url "https://repo.grails.org/grails/plugins3-snapshots-local"
-                    } else {
-                        url "https://repo.grails.org/grails/plugins3-releases-local"
-                    }
+                    url = project.findProperty("nexusUrl") ?: System.getenv("NEXUS_URL")
+                    allowInsecureProtocol = project.findProperty("isNexusUrlInsecure") ? true : false
                 }
             }
-
             publications {
                 mavenRelease(MavenPublication) {
-
                     groupId = project.group
                     artifactId = project.name
                     version = project.version
-
                     from components.java
-
                     artifact sourcesJar
                     artifact javadocJar
 
@@ -153,6 +137,8 @@ subprojects { Project project ->
                                 url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
                             }
                         }
+                        // Uncomment and configure developers and scm sections if needed
+                        /*
                         developers {
                             developer {
                                 id = 'alvarosanchez'
@@ -170,16 +156,30 @@ subprojects { Project project ->
                             developerConnection = 'scm:git:https://github.com/grails/grails-spring-security-rest.git'
                             url = 'https://github.com/grails/grails-spring-security-rest/tree/3.0.x'
                         }
+                        */
                     }
                 }
             }
         }
 
+        // Uncomment if you want to enable signing
+        /*
         signing {
             sign publishing.publications.mavenRelease
         }
+        */
     }
 }
+
+gitProperties {
+    keys = ['git.branch', 'git.commit.id', 'git.commit.time', 'git.commit.id.abbrev']
+    failOnNoGitDirectory = true
+    extProperty = 'gitProps' // git properties will be put in a map at project.ext.gitProps
+}
+
+generateGitProperties.outputs.upToDateWhen {
+    false
+} // make sure the generateGitProperties task always executes (even when git.properties is not changed)
 
 task aggregateGroovyDoc(type: Groovydoc) {
     def groovyDocProjects = subprojects.findAll { it.name in pluginProjects }
@@ -187,7 +187,7 @@ task aggregateGroovyDoc(type: Groovydoc) {
 
     dependsOn groovyDocProjects.groovydoc
     source groovyDocProjects.groovydoc.source
-    destinationDir file("${buildDir}/docs/groovydoc")
+    destinationDir = file("${buildDir}/docs/groovydoc")
     classpath = files(groovyDocProjects.groovydoc.classpath)
     groovyClasspath = files(groovyDocProjects.groovydoc.groovyClasspath)
 }

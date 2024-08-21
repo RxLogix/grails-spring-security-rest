@@ -66,7 +66,7 @@ import org.springframework.security.web.savedrequest.NullRequestCache
 class SpringSecurityRestGrailsPlugin extends Plugin {
 
     // the version or versions of Grails the plugin is designed for
-    String grailsVersion = "4.0.0 > *"
+    String grailsVersion = "6.2.0 > *"
     List loadAfter = ['springSecurityCore']
     List pluginExcludes = [
         "grails-app/views/**"
